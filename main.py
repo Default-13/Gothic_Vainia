@@ -1,56 +1,54 @@
-# Simple pygame program
-
-# Import the pygame library
-import pygame
-
-# Import pygames.locals for convenience 
-from pygame.locals import (
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
-    K_ESCAPE,
-    KEYDOWN,
-    QUIT,
-)
+# Import libraries
+import pygame, sys
+from settings import *
+from world import World
 
 # Init pygame library
 pygame.init()
 
-# Define constants for the screen width and height
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-
 # Create the screen object
-# the size determind by the constant SCREEN_WIDTH and SCREEN HEIGHT
-screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
+# the size determind by the constant WIDTH andHEIGHT
+screen = pygame.display.set_mode((WIDTH,HEIGHT))
+pygame.display.set_caption("Gothic_Vainia")
 
-# Variable to keep the game running
-running = True
+# Gothic_Vainia class uses __init__() method initializes
+# various attributes and loads then scales background image 
+# from a given file path 
+class Gothic_Vainia:
+    def __init__(self, screen, width, height):
+        self.screen = screen
+        self.clock = pygame.time.Clock()
+        self.player_event = False
+        self.bg_img = pygame.image.load('assets/gothicvania-cemetery-files/PNG/Environment/background.png')
+        self.bg_img = pygame.transform.scale(self.bg_img, (width, height))
+# the main() method is where the game loop is located. this
+# creates and instance called World as a class and passes
+# the world_map and screen as parameters. This will run 
+# indefinitely until the game is closed.
+    def main(self):
+        world =World(world_map, self.screen)
+        while True:
+            self.screen.blit(self.bg_img, (0,0))
+            for event in pygame.event():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key ==pygame.K_LEFT:
+                        self.player_event == "left"
+                    if event.key ==pygame.K_RIGHT:
+                        self.player_event == "right"
+                    if event.key ==pygame.K_SPACE:
+                        self.player_event == "space"
+                elif event.type == pygame.KEYUP:
+                    self.player_event = False
+                
+            world.update(self.player_event)
+            pygame.display.update()
+            self.clock.tick(60)
 
-# Main loop
-while running:
-    # Look at every event in the game
-    for event in pygame.event.get():
-        # Did the user hit the key?
-        if event.type == KEYDOWN:
-            # Was it the Escape key? If so, stop the loop.
-            if event.key == K_ESCAPE:
-                running = False
-            # Did the user click the window close button?
-        elif event.type == QUIT:
-            running == False
+if __name__ == "__main__":
+    play = Gothic_Vainia(screen, WIDTH, HEIGHT)
+    play.main()
 
-# Fill the screen with white
-screen.fill((255, 255, 255))
-
-# Create a surface and pass in a tuple containing its length and width
-surf = pygame.Surface((50, 50))
-
-# Give the surface a color to seperate from the background
-surf.fill((0,0,0))
-rect = surf.get_rect()
-
-# This line says "Draw surf onto the screen at the center"
-screen.blit(surf, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
-pygame.display.flip()
+                    
